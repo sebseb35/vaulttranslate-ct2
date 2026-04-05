@@ -1,5 +1,12 @@
 # Task
 
+## Metadata
+- Issue: #<number>
+- Status: ready
+- Priority: P1
+- Type: feature
+- Area: core
+
 ## Title
 Short task title
 
@@ -42,3 +49,4 @@ Optional hints.
 - [ ] tests added
 - [ ] validation passed
 - [ ] docs updated
+- [ ] issue closure comment posted

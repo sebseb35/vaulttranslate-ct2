@@ -1,16 +1,16 @@
 ---
-name: Agent Task (Structured)
-about: Structured task for Codex with backlog labels
+name: Feature / Task
+about: Backlog item to execute with Codex using a task contract
 title: "[task] "
 labels: ["status:ready", "type:feature", "priority:P2", "area:core"]
 assignees: []
 ---
 
 ## Why
-Describe user/developer impact.
+Problem statement and impact.
 
 ## What
-Describe expected outcome and acceptance criteria.
+Expected outcome and acceptance criteria.
 
 ## Scope
 - item
@@ -19,7 +19,6 @@ Describe expected outcome and acceptance criteria.
 ## Constraints
 - No cloud APIs
 - CPU-only
-- No OCR
 - Keep architecture stable unless justified
 
 ## Deliverables

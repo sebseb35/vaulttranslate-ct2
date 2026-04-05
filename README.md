@@ -14,6 +14,11 @@ Install optional real CT2 mode:
 pip install -e ".[ct2]"
 ```
 
+Workflow docs:
+- `docs/agentic-workflow.md`
+- `docs/backlog-status.md`
+- `docs/roadmap.md`
+
 Run a dry-run request preview:
 
 ```bash
@@ -51,6 +56,27 @@ vaulttranslate translate \
 
 For multiline TXT content, the CT2 path preserves newline structure and translates line chunks to avoid dropped content.
 When using `--model-path`, the CLI validates that model/tokenizer directories exist and reports clear errors.
+
+## Backlog Utilities
+Local helper commands:
+
+```bash
+scripts/new-task.sh <issue_number> [slug]
+scripts/run-task.sh docs/tasks/<task-file>.md
+scripts/list-tasks.sh
+scripts/list-pending-tasks.sh
+scripts/summarize-completed-tasks.sh
+scripts/snapshot-backlog.sh
+```
+
+Equivalent Makefile targets:
+
+```bash
+make tasks
+make tasks-pending
+make tasks-done
+make tasks-snapshot
+```
 
 ## Real CT2 Smoke Test (Optional)
 No model is downloaded automatically. Place a compatible CTranslate2 model folder locally, then run:
