@@ -22,3 +22,16 @@ vaulttranslate translate \
   --source en \
   --target fr
 ```
+
+Optional real CTranslate2 mode (CPU-only) by passing a local model directory:
+
+```bash
+vaulttranslate translate \
+  --input ./document.txt \
+  --output ./document.fr.txt \
+  --source en \
+  --target fr \
+  --model-path /path/to/ct2-model \
+  --inter-threads 2 \
+  --intra-threads 4
+```

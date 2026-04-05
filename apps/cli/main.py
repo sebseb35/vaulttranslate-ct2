@@ -4,12 +4,9 @@ from pathlib import Path
 
 import typer
 
-from packages.core import (
-    DocumentFormat,
-    MockTranslatorEngine,
-    run_pipeline,
-    select_adapter,
-)
+from packages.core.models import DocumentFormat
+from packages.core.pipeline import run_pipeline, select_adapter
+from packages.core.engine_selection import select_engine
 
 app = typer.Typer(help="Offline document translation CLI.")
 
@@ -57,15 +54,40 @@ def translate(
     dry_run: bool = typer.Option(
         False, "--dry-run", help="Validate inputs and show a translation plan only."
     ),
+    model_path: Path | None = typer.Option(
+        None,
+        "--model-path",
+        help="Optional CTranslate2 model directory. Uses mock engine when omitted.",
+    ),
+    inter_threads: int = typer.Option(
+        1,
+        "--inter-threads",
+        min=1,
+        help="CPU inter-op threads for CTranslate2 (when model-path is set).",
+    ),
+    intra_threads: int = typer.Option(
+        1,
+        "--intra-threads",
+        min=1,
+        help="CPU intra-op threads for CTranslate2 (when model-path is set).",
+    ),
+    compute_type: str = typer.Option(
+        "default",
+        "--compute-type",
+        help="CTranslate2 compute type, e.g. default/int8/float32.",
+    ),
 ) -> None:
     """Translate a document end-to-end using local adapters and engine."""
     document_format = infer_document_format(input_path)
     if not output_path.parent.exists():
         raise typer.BadParameter(f"Output directory does not exist: {output_path.parent}")
+    if model_path is not None and not model_path.exists():
+        raise typer.BadParameter(f"Model path does not exist: {model_path}")
 
     adapter = select_adapter(document_format)
     document_bytes = input_path.read_bytes()
     segments = adapter.extract_segments(document_bytes)
+    engine_mode = "ctranslate2" if model_path is not None else "mock"
 
     typer.echo("Prepared translation request:")
     typer.echo(f"document_format={document_format.value}")
@@ -74,12 +96,20 @@ def translate(
     typer.echo(f"input={input_path}")
     typer.echo(f"output={output_path}")
     typer.echo(f"segments={len(segments)}")
+    typer.echo(f"engine={engine_mode}")
+    if model_path is not None:
+        typer.echo(f"model_path={model_path}")
 
     if dry_run:
         typer.echo("Dry-run: no translation executed.")
         raise typer.Exit(code=0)
 
-    engine = MockTranslatorEngine()
+    engine = select_engine(
+        model_path=model_path,
+        inter_threads=inter_threads,
+        intra_threads=intra_threads,
+        compute_type=compute_type,
+    )
     artifacts = run_pipeline(
         document_bytes=document_bytes,
         adapter=adapter,
