@@ -12,3 +12,13 @@ vaulttranslate translate \
   --target fr \
   --dry-run
 ```
+
+Run without `--dry-run` to execute the local pipeline (`txt`, `md`, `docx`) and write output:
+
+```bash
+vaulttranslate translate \
+  --input ./document.txt \
+  --output ./document.fr.txt \
+  --source en \
+  --target fr
+```

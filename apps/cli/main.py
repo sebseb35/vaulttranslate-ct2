@@ -4,15 +4,17 @@ from pathlib import Path
 
 import typer
 
-from packages.core import DocumentFormat, Segment, TranslationRequest
+from packages.core import (
+    DocumentFormat,
+    MockTranslatorEngine,
+    run_pipeline,
+    select_adapter,
+)
 
 app = typer.Typer(help="Offline document translation CLI.")
 
 _SUFFIX_TO_FORMAT: dict[str, DocumentFormat] = {
     ".docx": DocumentFormat.DOCX,
-    ".pptx": DocumentFormat.PPTX,
-    ".xlsx": DocumentFormat.XLSX,
-    ".pdf": DocumentFormat.PDF,
     ".md": DocumentFormat.MD,
     ".txt": DocumentFormat.TXT,
 }
@@ -56,33 +58,39 @@ def translate(
         False, "--dry-run", help="Validate inputs and show a translation plan only."
     ),
 ) -> None:
-    """Prepare a translation request skeleton."""
+    """Translate a document end-to-end using local adapters and engine."""
     document_format = infer_document_format(input_path)
-    request = TranslationRequest(
-        document_format=document_format,
-        source_language=source,
-        target_language=target,
-        segments=(Segment(segment_id="segment-1", text=""),),
-        metadata={
-            "input_path": str(input_path),
-            "output_path": str(output_path),
-        },
-    )
     if not output_path.parent.exists():
         raise typer.BadParameter(f"Output directory does not exist: {output_path.parent}")
 
+    adapter = select_adapter(document_format)
+    document_bytes = input_path.read_bytes()
+    segments = adapter.extract_segments(document_bytes)
+
     typer.echo("Prepared translation request:")
-    typer.echo(f"document_format={request.document_format.value}")
-    typer.echo(f"source={request.source_language}")
-    typer.echo(f"target={request.target_language}")
+    typer.echo(f"document_format={document_format.value}")
+    typer.echo(f"source={source}")
+    typer.echo(f"target={target}")
     typer.echo(f"input={input_path}")
     typer.echo(f"output={output_path}")
+    typer.echo(f"segments={len(segments)}")
 
     if dry_run:
         typer.echo("Dry-run: no translation executed.")
         raise typer.Exit(code=0)
 
-    typer.echo("Translation engine is not wired yet. Re-run with --dry-run to preview request.")
+    engine = MockTranslatorEngine()
+    artifacts = run_pipeline(
+        document_bytes=document_bytes,
+        adapter=adapter,
+        source_language=source,
+        target_language=target,
+        input_path=str(input_path),
+        output_path=str(output_path),
+        engine=engine,
+    )
+    output_path.write_bytes(artifacts.output_bytes)
+    typer.echo(f"Wrote translated file to {output_path}")
     raise typer.Exit(code=0)
 
 def main() -> None:
