@@ -30,3 +30,10 @@ Add a minimal CLI entrypoint for the project.
 ## Out of scope
 - GUI
 - cloud execution
+
+## Completion checklist
+- [x] code added
+- [x] tests added
+- [x] validation passed
+- [x] docs updated
+- [x] issue closure comment posted

@@ -32,4 +32,4 @@ Expected outcome and acceptance criteria.
 - mypy packages
 
 ## Task Contract
-- [ ] Create/update `docs/tasks/NNN-slug.md`
+- [ ] Create/update `docs/tasks/NNN-MMM-slug.md`

@@ -8,17 +8,17 @@ This file is a local planning snapshot. GitHub Issues remain source of truth.
 
 | Work Item | Task Contract | Status | Evidence | Follow-up Needed |
 |---|---|---|---|---|
-| Bootstrap core domain contracts | `docs/tasks/bootstrap-core.md` | done | core models/interfaces + tests merged (`579febd`) | no |
-| CLI skeleton | `docs/tasks/cli-skeleton.md` | done | Typer CLI + entrypoint + tests (`bae47a8`) | no |
-| TXT/MD adapter | `docs/tasks/text-adapter.md` | done | adapter extraction/rebuild + fixtures/tests (`bbcec0d`) | yes |
-| CTranslate2 engine | `docs/tasks/engine-ct2.md` | done | CPU engine wrapper + tests (`9aa1906`) | yes |
-| DOCX adapter | `docs/tasks/docx-adapter.md` | done | paragraph/run/table/header/footer support (`987f1ac`) | yes |
-| Pipeline E2E wiring | `docs/tasks/pipeline-e2e.md` | done | CLI->adapter->engine->output flow (`3916180`) | no |
-| Engine mode (mock + real) | `docs/tasks/engine-mode.md` | done | optional model-path mode + tests (`3765e50`) | no |
-| Real CT2 smoke test | `docs/tasks/real-ct2-smoke-test.md` | done | optional local smoke validation (`4796253`) | yes |
-| CT2 tokenizer integration | `docs/tasks/ct2-tokenizer-integration.md` | done | AutoTokenizer encode/decode flow (`d129d29`) | yes |
-| Marian output fidelity fix | `docs/tasks/fix-marian-ct2-output-fidelity.md` | done | multiline preservation fix + regression (`380213d`) | yes |
-| Integration + packaging | `docs/tasks/integration-packaging.md` | done | E2E integration tests + packaging/docs (`948f1f1`) | no |
+| Bootstrap core domain contracts | `docs/tasks/001-000-bootstrap-core.md` | done | core models/interfaces + tests merged (`579febd`) | no |
+| CLI skeleton | `docs/tasks/002-001-cli-skeleton.md` | done | Typer CLI + entrypoint + tests (`bae47a8`) | no |
+| TXT/MD adapter | `docs/tasks/004-003-text-adapter.md` | done | adapter extraction/rebuild + fixtures/tests (`bbcec0d`) | completed via `docs/tasks/006-005-pipeline-e2e.md` |
+| CTranslate2 engine | `docs/tasks/003-002-engine-ct2.md` | done | CPU engine wrapper + tests (`9aa1906`) | completed via `docs/tasks/007-006-engine-mode.md` and `docs/tasks/010-009-ct2-tokenizer-integration.md` |
+| DOCX adapter | `docs/tasks/005-004-docx-adapter.md` | done | paragraph/run/table/header/footer support (`987f1ac`) | open: `docs/tasks/014-013-docx-fidelity-hardening.md` |
+| Pipeline E2E wiring | `docs/tasks/006-005-pipeline-e2e.md` | done | CLI->adapter->engine->output flow (`3916180`) | no |
+| Engine mode (mock + real) | `docs/tasks/007-006-engine-mode.md` | done | optional model-path mode + tests (`3765e50`) | no |
+| Real CT2 smoke test | `docs/tasks/009-008-real-ct2-smoke-test.md` | done | optional local smoke validation (`4796253`) | completed via `docs/tasks/010-009-ct2-tokenizer-integration.md` |
+| CT2 tokenizer integration | `docs/tasks/010-009-ct2-tokenizer-integration.md` | done | AutoTokenizer encode/decode flow (`d129d29`) | completed via `docs/tasks/016-015-fix-marian-ct2-output-fidelity.md` |
+| Marian output fidelity fix | `docs/tasks/016-015-fix-marian-ct2-output-fidelity.md` | done | multiline preservation fix + regression (`380213d`) | open: `docs/tasks/015-014-ci-matrix-real-ct2-gate.md` |
+| Integration + packaging | `docs/tasks/008-007-integration-packaging.md` | done | E2E integration tests + packaging/docs (`948f1f1`) | no |
 
 ## Recommended Next Priorities
 
@@ -35,14 +35,14 @@ This file is a local planning snapshot. GitHub Issues remain source of truth.
 ## Close Immediately in GitHub
 
 The following issue-equivalent backlog items can be marked closed if still open:
-- bootstrap-core
-- cli-skeleton
-- text-adapter
-- engine-ct2
-- docx-adapter
-- pipeline-e2e
-- engine-mode
-- real-ct2-smoke-test
-- ct2-tokenizer-integration
-- fix-marian-ct2-output-fidelity
-- integration-packaging
+- `docs/tasks/001-000-bootstrap-core.md`
+- `docs/tasks/002-001-cli-skeleton.md`
+- `docs/tasks/004-003-text-adapter.md`
+- `docs/tasks/003-002-engine-ct2.md`
+- `docs/tasks/005-004-docx-adapter.md`
+- `docs/tasks/006-005-pipeline-e2e.md`
+- `docs/tasks/007-006-engine-mode.md`
+- `docs/tasks/009-008-real-ct2-smoke-test.md`
+- `docs/tasks/010-009-ct2-tokenizer-integration.md`
+- `docs/tasks/016-015-fix-marian-ct2-output-fidelity.md`
+- `docs/tasks/008-007-integration-packaging.md`

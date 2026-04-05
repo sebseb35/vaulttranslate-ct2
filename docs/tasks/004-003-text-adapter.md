@@ -30,3 +30,10 @@ Support extraction and reinjection for txt and md files.
 ## Out of scope
 - HTML conversion
 - advanced markdown AST rewriting
+
+## Completion checklist
+- [x] code added
+- [x] tests added
+- [x] validation passed
+- [x] docs updated
+- [x] issue closure comment posted

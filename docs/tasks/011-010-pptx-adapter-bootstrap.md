@@ -68,8 +68,8 @@ PowerPoint is a high-value enterprise format and a natural next step after DOCX 
 docs/tasks/010-pptx-adapter-bootstrap.md
 
 ## Completion checklist
-- [ ] code added
-- [ ] tests added
-- [ ] validation passed
-- [ ] docs updated
-- [ ] issue closure comment posted
+- [x] code added
+- [x] tests added
+- [x] validation passed
+- [x] docs updated
+- [x] issue closure comment posted

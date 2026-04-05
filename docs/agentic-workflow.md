@@ -68,9 +68,10 @@ Use a minimal, composable label set.
 ## Task Contract Convention (`docs/tasks`)
 
 ### Naming
-- New task files should use: `docs/tasks/NNN-slug.md`
-  - `NNN` defaults to GitHub issue number when available.
-  - Existing non-numbered task files remain valid legacy contracts.
+- Task files should use: `docs/tasks/NNN-MMM-slug.md`
+  - `NNN` is the GitHub issue number when available.
+  - `MMM` is the previous sequence slot to preserve stable ordering with imported legacy tasks.
+  - For issue `1`, use `000` as the second prefix.
 
 ### Structure
 - Use `docs/tasks/_template.md`.

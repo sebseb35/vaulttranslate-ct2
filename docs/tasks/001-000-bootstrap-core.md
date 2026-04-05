@@ -34,3 +34,10 @@ This repo is an offline enterprise document translation engine supporting DOCX, 
 ## Out of scope
 - CTranslate2 integration
 - document parsing
+
+## Completion checklist
+- [x] code added
+- [x] tests added
+- [x] validation passed
+- [x] docs updated
+- [x] issue closure comment posted

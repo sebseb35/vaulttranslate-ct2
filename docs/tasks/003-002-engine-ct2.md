@@ -30,3 +30,10 @@ Wrap local CTranslate2 usage behind the TranslatorEngine interface.
 ## Out of scope
 - model management UI
 - benchmark suite
+
+## Completion checklist
+- [x] code added
+- [x] tests added
+- [x] validation passed
+- [x] docs updated
+- [x] issue closure comment posted

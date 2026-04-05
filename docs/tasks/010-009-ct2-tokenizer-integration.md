@@ -40,3 +40,10 @@ However, the current engine uses a fallback whitespace tokenizer which is not co
 - pytest -q
 - ruff check .
 - mypy packages
+
+## Completion checklist
+- [x] code added
+- [x] tests added
+- [x] validation passed
+- [x] docs updated
+- [x] issue closure comment posted

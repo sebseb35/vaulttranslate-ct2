@@ -28,3 +28,10 @@ Validate the full pipeline with a real local CTranslate2 model.
 ## Validation
 - manual run success
 - output file generated correctly
+
+## Completion checklist
+- [x] code added
+- [x] tests added
+- [x] validation passed
+- [x] docs updated
+- [x] issue closure comment posted

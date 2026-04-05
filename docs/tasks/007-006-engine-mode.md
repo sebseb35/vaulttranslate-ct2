@@ -24,3 +24,10 @@ Support both mock translation and optional real CTranslate2 usage.
 - pytest -q
 - ruff check .
 - mypy packages
+
+## Completion checklist
+- [x] code added
+- [x] tests added
+- [x] validation passed
+- [x] docs updated
+- [x] issue closure comment posted

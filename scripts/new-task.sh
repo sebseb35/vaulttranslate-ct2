@@ -30,7 +30,12 @@ if ! [[ "$ISSUE" =~ ^[0-9]+$ ]]; then
 fi
 
 PADDED_ISSUE="$(printf "%03d" "$ISSUE")"
-OUT="docs/tasks/${PADDED_ISSUE}-${SLUG}.md"
+PREV_ISSUE_NUM=$((10#$ISSUE - 1))
+if (( PREV_ISSUE_NUM < 0 )); then
+  PREV_ISSUE_NUM=0
+fi
+PADDED_PREV_ISSUE="$(printf "%03d" "$PREV_ISSUE_NUM")"
+OUT="docs/tasks/${PADDED_ISSUE}-${PADDED_PREV_ISSUE}-${SLUG}.md"
 
 if [[ -f "$OUT" ]]; then
   echo "Task already exists: $OUT"

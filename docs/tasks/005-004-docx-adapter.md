@@ -32,3 +32,10 @@ Extract and reinject translatable DOCX text while preserving structure.
 - comments
 - tracked changes
 - smart art
+
+## Completion checklist
+- [x] code added
+- [x] tests added
+- [x] validation passed
+- [x] docs updated
+- [x] issue closure comment posted
