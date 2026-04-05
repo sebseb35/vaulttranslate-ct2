@@ -4,6 +4,7 @@ from pathlib import Path
 
 import typer
 
+from packages.engine_ct2 import CTranslate2EngineError
 from packages.core.models import DocumentFormat
 from packages.core.pipeline import run_pipeline, select_adapter
 from packages.core.engine_selection import select_engine
@@ -29,6 +30,32 @@ def infer_document_format(path: Path) -> DocumentFormat:
             f"Unsupported input format for '{path.name}'. Supported formats: {supported}"
         )
     return document_format
+
+
+def _validate_engine_paths(
+    *,
+    model_path: Path | None,
+    tokenizer_path: str | None,
+) -> None:
+    if tokenizer_path is not None and model_path is None:
+        raise typer.BadParameter("--tokenizer-path requires --model-path")
+
+    if model_path is None:
+        return
+
+    if not model_path.exists():
+        raise typer.BadParameter(f"Model path does not exist: {model_path}")
+    if not model_path.is_dir():
+        raise typer.BadParameter(f"Model path must be a directory: {model_path}")
+
+    if tokenizer_path is None:
+        return
+
+    tokenizer_dir = Path(tokenizer_path).expanduser()
+    if not tokenizer_dir.exists():
+        raise typer.BadParameter(f"Tokenizer path does not exist: {tokenizer_path}")
+    if not tokenizer_dir.is_dir():
+        raise typer.BadParameter(f"Tokenizer path must be a directory: {tokenizer_path}")
 
 
 @app.command()
@@ -86,8 +113,7 @@ def translate(
     document_format = infer_document_format(input_path)
     if not output_path.parent.exists():
         raise typer.BadParameter(f"Output directory does not exist: {output_path.parent}")
-    if model_path is not None and not model_path.exists():
-        raise typer.BadParameter(f"Model path does not exist: {model_path}")
+    _validate_engine_paths(model_path=model_path, tokenizer_path=tokenizer_path)
 
     adapter = select_adapter(document_format)
     document_bytes = input_path.read_bytes()
@@ -111,22 +137,27 @@ def translate(
         typer.echo("Dry-run: no translation executed.")
         raise typer.Exit(code=0)
 
-    engine = select_engine(
-        model_path=model_path,
-        tokenizer_path=tokenizer_path,
-        inter_threads=inter_threads,
-        intra_threads=intra_threads,
-        compute_type=compute_type,
-    )
-    artifacts = run_pipeline(
-        document_bytes=document_bytes,
-        adapter=adapter,
-        source_language=source,
-        target_language=target,
-        input_path=str(input_path),
-        output_path=str(output_path),
-        engine=engine,
-    )
+    try:
+        engine = select_engine(
+            model_path=model_path,
+            tokenizer_path=tokenizer_path,
+            inter_threads=inter_threads,
+            intra_threads=intra_threads,
+            compute_type=compute_type,
+        )
+        artifacts = run_pipeline(
+            document_bytes=document_bytes,
+            adapter=adapter,
+            source_language=source,
+            target_language=target,
+            input_path=str(input_path),
+            output_path=str(output_path),
+            engine=engine,
+        )
+    except CTranslate2EngineError as exc:
+        typer.secho(f"CTranslate2 error: {exc}", err=True, fg=typer.colors.RED)
+        raise typer.Exit(code=1) from exc
+
     output_path.write_bytes(artifacts.output_bytes)
     typer.echo(f"Wrote translated file to {output_path}")
     raise typer.Exit(code=0)

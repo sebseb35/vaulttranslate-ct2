@@ -1,8 +1,20 @@
 # vaulttranslate-ct2
 Private, on-device document translation for enterprise. Translate DOCX, PPTX, XLSX, PDF, MD, and TXT with formatting preserved. No cloud, no data leakage—powered by CTranslate2 for fast CPU inference.
 
-## CLI (skeleton)
-Run a dry-run request preview with:
+## Quickstart
+Install default local/mock mode:
+
+```bash
+pip install -e .
+```
+
+Install optional real CT2 mode:
+
+```bash
+pip install -e ".[ct2]"
+```
+
+Run a dry-run request preview:
 
 ```bash
 vaulttranslate translate \
@@ -38,6 +50,7 @@ vaulttranslate translate \
 ```
 
 For multiline TXT content, the CT2 path preserves newline structure and translates line chunks to avoid dropped content.
+When using `--model-path`, the CLI validates that model/tokenizer directories exist and reports clear errors.
 
 ## Real CT2 Smoke Test (Optional)
 No model is downloaded automatically. Place a compatible CTranslate2 model folder locally, then run:

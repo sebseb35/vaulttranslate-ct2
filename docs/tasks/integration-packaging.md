@@ -15,8 +15,10 @@ Stabilize MVP and make project runnable end-to-end.
 - deterministic tests
 
 ## Deliverables
-- integration tests
-- packaging improvements
+- end-to-end CLI tests for txt, md, docx
+- packaging improvements if needed (pyproject, install, entrypoint)
+- README quickstart improvements
+- minimal environment validation (clear errors if missing model/tokenizer)
 - README quickstart
 
 ## Validation

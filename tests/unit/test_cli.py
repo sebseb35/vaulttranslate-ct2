@@ -197,8 +197,9 @@ def test_translate_uses_ct2_mode_when_model_path_is_provided(
     input_path = tmp_path / "sample.txt"
     output_path = tmp_path / "out.txt"
     model_dir = tmp_path / "ct2-model"
+    tokenizer_dir = tmp_path / "tokenizer"
     model_dir.mkdir()
-    tokenizer_ref = "Helsinki-NLP/opus-mt-en-fr"
+    tokenizer_dir.mkdir()
     input_path.write_text("hello", encoding="utf-8")
 
     captured: dict[str, object] = {}
@@ -249,7 +250,7 @@ def test_translate_uses_ct2_mode_when_model_path_is_provided(
             "--model-path",
             str(model_dir),
             "--tokenizer-path",
-            tokenizer_ref,
+            str(tokenizer_dir),
             "--inter-threads",
             "2",
             "--intra-threads",
@@ -265,8 +266,125 @@ def test_translate_uses_ct2_mode_when_model_path_is_provided(
     assert output_path.read_text(encoding="utf-8") == "hello [REAL]"
     assert captured == {
         "model_path": model_dir,
-        "tokenizer_path": tokenizer_ref,
+        "tokenizer_path": str(tokenizer_dir),
         "inter_threads": 2,
         "intra_threads": 3,
         "compute_type": "int8",
     }
+
+
+def test_translate_rejects_tokenizer_path_without_model_path(tmp_path: Path) -> None:
+    input_path = tmp_path / "sample.txt"
+    output_path = tmp_path / "out.txt"
+    input_path.write_text("hello", encoding="utf-8")
+
+    result = runner.invoke(
+        app,
+        [
+            "translate",
+            "--input",
+            str(input_path),
+            "--output",
+            str(output_path),
+            "--source",
+            "en",
+            "--target",
+            "fr",
+            "--tokenizer-path",
+            str(tmp_path / "tokenizer"),
+        ],
+    )
+
+    assert result.exit_code != 0
+    assert "--tokenizer-path requires --model-path" in result.output
+
+
+def test_translate_rejects_missing_tokenizer_directory(tmp_path: Path) -> None:
+    input_path = tmp_path / "sample.txt"
+    output_path = tmp_path / "out.txt"
+    model_dir = tmp_path / "ct2-model"
+    missing_tokenizer_dir = tmp_path / "missing-tokenizer"
+    model_dir.mkdir()
+    input_path.write_text("hello", encoding="utf-8")
+
+    result = runner.invoke(
+        app,
+        [
+            "translate",
+            "--input",
+            str(input_path),
+            "--output",
+            str(output_path),
+            "--source",
+            "en",
+            "--target",
+            "fr",
+            "--model-path",
+            str(model_dir),
+            "--tokenizer-path",
+            str(missing_tokenizer_dir),
+        ],
+    )
+
+    assert result.exit_code != 0
+    assert "Tokenizer path does not exist" in result.output
+
+
+def test_translate_rejects_model_path_when_not_directory(tmp_path: Path) -> None:
+    input_path = tmp_path / "sample.txt"
+    output_path = tmp_path / "out.txt"
+    model_file = tmp_path / "model.bin"
+    model_file.write_text("x", encoding="utf-8")
+    input_path.write_text("hello", encoding="utf-8")
+
+    result = runner.invoke(
+        app,
+        [
+            "translate",
+            "--input",
+            str(input_path),
+            "--output",
+            str(output_path),
+            "--source",
+            "en",
+            "--target",
+            "fr",
+            "--model-path",
+            str(model_file),
+        ],
+    )
+
+    assert result.exit_code != 0
+    assert "Model path must be a directory" in result.output
+
+
+def test_translate_rejects_tokenizer_path_when_not_directory(tmp_path: Path) -> None:
+    input_path = tmp_path / "sample.txt"
+    output_path = tmp_path / "out.txt"
+    model_dir = tmp_path / "ct2-model"
+    tokenizer_file = tmp_path / "tokenizer.json"
+    model_dir.mkdir()
+    tokenizer_file.write_text("{}", encoding="utf-8")
+    input_path.write_text("hello", encoding="utf-8")
+
+    result = runner.invoke(
+        app,
+        [
+            "translate",
+            "--input",
+            str(input_path),
+            "--output",
+            str(output_path),
+            "--source",
+            "en",
+            "--target",
+            "fr",
+            "--model-path",
+            str(model_dir),
+            "--tokenizer-path",
+            str(tokenizer_file),
+        ],
+    )
+
+    assert result.exit_code != 0
+    assert "Tokenizer path must be a directory" in result.output

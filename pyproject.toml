@@ -12,6 +12,11 @@ dependencies = [
     "typer",
     "pydantic",
     "python-docx",
+]
+
+[project.optional-dependencies]
+ct2 = [
+    "ctranslate2",
     "transformers",
 ]
 
