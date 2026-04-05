@@ -8,10 +8,11 @@ from packages.core import (
 )
 
 
-def test_select_adapter_supports_txt_md_docx() -> None:
+def test_select_adapter_supports_txt_md_docx_pptx() -> None:
     assert select_adapter(DocumentFormat.TXT).supported_format is DocumentFormat.TXT
     assert select_adapter(DocumentFormat.MD).supported_format is DocumentFormat.MD
     assert select_adapter(DocumentFormat.DOCX).supported_format is DocumentFormat.DOCX
+    assert select_adapter(DocumentFormat.PPTX).supported_format is DocumentFormat.PPTX
 
 
 def test_select_adapter_rejects_unsupported_format() -> None:
@@ -36,4 +37,3 @@ def test_run_pipeline_translates_txt_document_bytes() -> None:
     assert artifacts.request.document_format is DocumentFormat.TXT
     assert artifacts.result.metadata["engine"] == "mock"
     assert artifacts.output_bytes.decode("utf-8") == "hello world [fr]"
-

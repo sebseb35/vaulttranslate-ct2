@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from packages.adapter_docx import DocxDocumentAdapter
+from packages.adapter_pptx import PptxDocumentAdapter
 from packages.adapter_text import MarkdownDocumentAdapter, TxtDocumentAdapter
 
 from .interfaces import DocumentAdapter, TranslatorEngine
@@ -23,6 +24,8 @@ def select_adapter(document_format: DocumentFormat) -> DocumentAdapter:
         return MarkdownDocumentAdapter()
     if document_format is DocumentFormat.DOCX:
         return DocxDocumentAdapter()
+    if document_format is DocumentFormat.PPTX:
+        return PptxDocumentAdapter()
     raise ValueError(f"No adapter configured for document format '{document_format.value}'")
 
 

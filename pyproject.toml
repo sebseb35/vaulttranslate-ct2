@@ -12,6 +12,7 @@ dependencies = [
     "typer",
     "pydantic",
     "python-docx",
+    "python-pptx",
 ]
 
 [project.optional-dependencies]
