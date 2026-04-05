@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import logging
-from importlib import import_module
 from collections.abc import Callable
+from importlib import import_module
 from typing import Any
 
 from packages.core import Segment, TranslationRequest, TranslationResult, TranslatorEngine
@@ -18,16 +18,22 @@ def _load_ctranslate2() -> Any:
     return import_module("ctranslate2")
 
 
+def _load_transformers() -> Any:
+    return import_module("transformers")
+
+
 class CTranslate2TranslatorEngine(TranslatorEngine):
     def __init__(
         self,
         model_path: str,
         *,
+        tokenizer_path: str | None = None,
         inter_threads: int = 1,
         intra_threads: int = 1,
         compute_type: str = "default",
-        tokenizer: Callable[[str], list[str]] | None = None,
-        detokenizer: Callable[[list[str]], str] | None = None,
+        tokenizer: Any | None = None,
+        token_encoder: Callable[[Any, str], list[str]] | None = None,
+        token_decoder: Callable[[Any, list[str]], str] | None = None,
     ) -> None:
         if not model_path.strip():
             raise ValueError("model_path must be a non-empty string")
@@ -37,8 +43,23 @@ class CTranslate2TranslatorEngine(TranslatorEngine):
             raise ValueError("intra_threads must be >= 1")
 
         self._model_path = model_path
-        self._tokenizer = tokenizer or self._default_tokenizer
-        self._detokenizer = detokenizer or self._default_detokenizer
+        self._tokenizer_path = tokenizer_path or model_path
+        self._tokenizer = tokenizer
+        self._token_encoder = token_encoder or self._encode_with_tokenizer
+        self._token_decoder = token_decoder or self._decode_with_tokenizer
+
+        if self._tokenizer is None:
+            try:
+                transformers = _load_transformers()
+                self._tokenizer = transformers.AutoTokenizer.from_pretrained(
+                    self._tokenizer_path,
+                    local_files_only=True,
+                )
+            except Exception as exc:
+                logger.error("Failed to load tokenizer from '%s': %s", self._tokenizer_path, exc)
+                raise CTranslate2EngineError(
+                    f"Failed to load tokenizer from '{self._tokenizer_path}': {exc}"
+                ) from exc
 
         try:
             ctranslate2 = _load_ctranslate2()
@@ -54,7 +75,7 @@ class CTranslate2TranslatorEngine(TranslatorEngine):
             raise CTranslate2EngineError(f"Failed to initialize CTranslate2 translator: {exc}") from exc
 
     def translate(self, request: TranslationRequest) -> TranslationResult:
-        batch_tokens = [self._tokenizer(segment.text) for segment in request.segments]
+        batch_tokens = [self._token_encoder(self._tokenizer, segment.text) for segment in request.segments]
 
         logger.debug("Translating %d segments with CTranslate2", len(batch_tokens))
 
@@ -78,7 +99,7 @@ class CTranslate2TranslatorEngine(TranslatorEngine):
                 )
 
             best_tokens = hypotheses[0]
-            translated_text = self._detokenizer(best_tokens)
+            translated_text = self._token_decoder(self._tokenizer, best_tokens)
             translated_segments.append(
                 Segment(
                     segment_id=source_segment.segment_id,
@@ -96,20 +117,17 @@ class CTranslate2TranslatorEngine(TranslatorEngine):
                 **request.metadata,
                 "engine": "ctranslate2",
                 "model_path": self._model_path,
+                "tokenizer_path": self._tokenizer_path,
             },
         )
 
     @staticmethod
-    def _default_tokenizer(text: str) -> list[str]:
-        """Fallback tokenizer for tests and simple demos only."""
-        stripped = text.strip()
-        if not stripped:
-            return [""]
-        return stripped.split()
+    def _encode_with_tokenizer(tokenizer: Any, text: str) -> list[str]:
+        token_ids = tokenizer.encode(text, add_special_tokens=True)
+        token_strings = tokenizer.convert_ids_to_tokens(token_ids)
+        return [str(token) for token in token_strings]
 
     @staticmethod
-    def _default_detokenizer(tokens: list[str]) -> str:
-        """Fallback detokenizer for tests and simple demos only."""
-        if len(tokens) == 1 and tokens[0] == "":
-            return ""
-        return " ".join(tokens)
+    def _decode_with_tokenizer(tokenizer: Any, tokens: list[str]) -> str:
+        token_ids = tokenizer.convert_tokens_to_ids(tokens)
+        return str(tokenizer.decode(token_ids, skip_special_tokens=True))

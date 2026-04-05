@@ -32,6 +32,7 @@ vaulttranslate translate \
   --source en \
   --target fr \
   --model-path /path/to/ct2-model \
+  --tokenizer-path /path/to/tokenizer-or-local-hf-cache \
   --inter-threads 2 \
   --intra-threads 4
 ```

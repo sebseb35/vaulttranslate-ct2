@@ -20,11 +20,13 @@ def test_select_engine_builds_ct2_when_model_path_is_provided(
             self,
             model_path: str,
             *,
+            tokenizer_path: str | None,
             inter_threads: int,
             intra_threads: int,
             compute_type: str,
         ) -> None:
             captured["model_path"] = model_path
+            captured["tokenizer_path"] = tokenizer_path
             captured["inter_threads"] = inter_threads
             captured["intra_threads"] = intra_threads
             captured["compute_type"] = compute_type
@@ -46,8 +48,8 @@ def test_select_engine_builds_ct2_when_model_path_is_provided(
     assert isinstance(engine, _FakeCt2Engine)
     assert captured == {
         "model_path": str(model_dir),
+        "tokenizer_path": None,
         "inter_threads": 2,
         "intra_threads": 4,
         "compute_type": "int8",
     }
-

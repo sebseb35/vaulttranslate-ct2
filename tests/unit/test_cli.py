@@ -198,6 +198,7 @@ def test_translate_uses_ct2_mode_when_model_path_is_provided(
     output_path = tmp_path / "out.txt"
     model_dir = tmp_path / "ct2-model"
     model_dir.mkdir()
+    tokenizer_ref = "Helsinki-NLP/opus-mt-en-fr"
     input_path.write_text("hello", encoding="utf-8")
 
     captured: dict[str, object] = {}
@@ -219,11 +220,13 @@ def test_translate_uses_ct2_mode_when_model_path_is_provided(
     def _fake_select_engine(
         *,
         model_path: Path | None,
+        tokenizer_path: str | None,
         inter_threads: int,
         intra_threads: int,
         compute_type: str,
     ) -> _FakeEngine:
         captured["model_path"] = model_path
+        captured["tokenizer_path"] = tokenizer_path
         captured["inter_threads"] = inter_threads
         captured["intra_threads"] = intra_threads
         captured["compute_type"] = compute_type
@@ -245,6 +248,8 @@ def test_translate_uses_ct2_mode_when_model_path_is_provided(
             "fr",
             "--model-path",
             str(model_dir),
+            "--tokenizer-path",
+            tokenizer_ref,
             "--inter-threads",
             "2",
             "--intra-threads",
@@ -260,6 +265,7 @@ def test_translate_uses_ct2_mode_when_model_path_is_provided(
     assert output_path.read_text(encoding="utf-8") == "hello [REAL]"
     assert captured == {
         "model_path": model_dir,
+        "tokenizer_path": tokenizer_ref,
         "inter_threads": 2,
         "intra_threads": 3,
         "compute_type": "int8",

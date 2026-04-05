@@ -59,6 +59,11 @@ def translate(
         "--model-path",
         help="Optional CTranslate2 model directory. Uses mock engine when omitted.",
     ),
+    tokenizer_path: str | None = typer.Option(
+        None,
+        "--tokenizer-path",
+        help="Optional tokenizer path/reference for CTranslate2 mode.",
+    ),
     inter_threads: int = typer.Option(
         1,
         "--inter-threads",
@@ -99,6 +104,8 @@ def translate(
     typer.echo(f"engine={engine_mode}")
     if model_path is not None:
         typer.echo(f"model_path={model_path}")
+        if tokenizer_path is not None:
+            typer.echo(f"tokenizer_path={tokenizer_path}")
 
     if dry_run:
         typer.echo("Dry-run: no translation executed.")
@@ -106,6 +113,7 @@ def translate(
 
     engine = select_engine(
         model_path=model_path,
+        tokenizer_path=tokenizer_path,
         inter_threads=inter_threads,
         intra_threads=intra_threads,
         compute_type=compute_type,
