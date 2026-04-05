@@ -35,3 +35,33 @@ vaulttranslate translate \
   --inter-threads 2 \
   --intra-threads 4
 ```
+
+## Real CT2 Smoke Test (Optional)
+No model is downloaded automatically. Place a compatible CTranslate2 model folder locally, then run:
+
+```bash
+export VT_CT2_MODEL_PATH=/path/to/ct2-model
+./.venv/bin/pytest -q tests/integration/test_real_ct2_smoke.py
+```
+
+Manual CLI check (TXT):
+
+```bash
+vaulttranslate translate \
+  --input ./sample.txt \
+  --output ./sample.fr.txt \
+  --source en \
+  --target fr \
+  --model-path "$VT_CT2_MODEL_PATH"
+```
+
+Manual CLI check (MD):
+
+```bash
+vaulttranslate translate \
+  --input ./sample.md \
+  --output ./sample.fr.md \
+  --source en \
+  --target fr \
+  --model-path "$VT_CT2_MODEL_PATH"
+```
