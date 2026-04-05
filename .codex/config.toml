@@ -1,0 +1,18 @@
+model = "gpt-5-codex"
+
+[project]
+instructions = """
+You are working on vaulttranslate-ct2.
+
+Always:
+- propose a plan before coding
+- inspect repo before editing
+- write/update tests
+- run validation before finishing
+
+Never:
+- add cloud APIs
+- add OCR
+- add AGPL dependencies
+- change architecture without justification
+"""
