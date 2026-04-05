@@ -7,6 +7,7 @@ name = "vaulttranslate-ct2"
 version = "0.1.0"
 description = "Offline document translation engine powered by CTranslate2"
 requires-python = ">=3.12"
+license = "Apache-2.0"
 
 dependencies = [
     "typer",

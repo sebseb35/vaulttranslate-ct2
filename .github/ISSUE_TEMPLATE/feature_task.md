@@ -1,5 +1,5 @@
 ---
-name: Feature / Task
+name: Task
 about: Backlog item to execute with Codex using a task contract
 title: "[task] "
 labels: ["status:ready", "type:feature", "priority:P2", "area:core"]
@@ -7,10 +7,10 @@ assignees: []
 ---
 
 ## Why
-Problem statement and impact.
+Describe user/developer impact.
 
 ## What
-Expected outcome and acceptance criteria.
+Describe expected outcome and acceptance criteria.
 
 ## Scope
 - item
@@ -19,6 +19,7 @@ Expected outcome and acceptance criteria.
 ## Constraints
 - No cloud APIs
 - CPU-only
+- No OCR
 - Keep architecture stable unless justified
 
 ## Deliverables

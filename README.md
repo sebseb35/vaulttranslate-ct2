@@ -1,5 +1,5 @@
 # vaulttranslate-ct2
-Private, on-device document translation for enterprise. Translate DOCX, PPTX, XLSX, PDF, MD, and TXT with formatting preserved. No cloud, no data leakage—powered by CTranslate2 for fast CPU inference.
+Private, on-device document translation for enterprise. Translate DOCX, PPTX, XLSX, PDF, MD, and TXT locally with structure-preserving adapters where practical. PDF support is intentionally text-first rather than visually faithful. No cloud, no data leakage, CPU-only.
 
 ## Quickstart
 Install default local/mock mode:
@@ -17,6 +17,7 @@ pip install -e ".[ct2]"
 Workflow docs:
 - `docs/agentic-workflow.md`
 - `docs/backlog-status.md`
+- `docs/decisions/README.md`
 - `docs/roadmap.md`
 
 Run a dry-run request preview:
@@ -30,7 +31,7 @@ vaulttranslate translate \
   --dry-run
 ```
 
-Run without `--dry-run` to execute the local pipeline (`txt`, `md`, `docx`) and write output:
+Run without `--dry-run` to execute the local pipeline (`txt`, `md`, `docx`, `pptx`, `xlsx`, `pdf`) and write output:
 
 ```bash
 vaulttranslate translate \
@@ -56,6 +57,15 @@ vaulttranslate translate \
 
 For multiline TXT content, the CT2 path preserves newline structure and translates line chunks to avoid dropped content.
 When using `--model-path`, the CLI validates that model/tokenizer directories exist and reports clear errors.
+
+## Format Notes
+- `txt`: round-trip text output
+- `md`: preserves fenced code blocks and protects inline code and links where possible
+- `docx`, `pptx`, `xlsx`: preserve document/workbook structure as much as possible
+- `pdf`: text-only extraction and simple text-first PDF rebuild, with no OCR and no visual fidelity guarantee
+
+## License
+This project is licensed under Apache-2.0. Current declared dependencies are permissive-license compatible (`MIT`, `BSD-3-Clause`, `Apache-2.0`).
 
 ## Backlog Utilities
 Local helper commands:
