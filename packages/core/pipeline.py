@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from packages.adapter_docx import DocxDocumentAdapter
+from packages.adapter_pdf import PdfDocumentAdapter
 from packages.adapter_pptx import PptxDocumentAdapter
 from packages.adapter_text import MarkdownDocumentAdapter, TxtDocumentAdapter
 from packages.adapter_xlsx import XlsxDocumentAdapter
@@ -29,7 +30,10 @@ def select_adapter(document_format: DocumentFormat) -> DocumentAdapter:
         return PptxDocumentAdapter()
     if document_format is DocumentFormat.XLSX:
         return XlsxDocumentAdapter()
-    raise ValueError(f"No adapter configured for document format '{document_format.value}'")
+    if document_format is DocumentFormat.PDF:
+        return PdfDocumentAdapter()
+    format_value = getattr(document_format, "value", str(document_format))
+    raise ValueError(f"No adapter configured for document format '{format_value}'")
 
 
 def build_request(

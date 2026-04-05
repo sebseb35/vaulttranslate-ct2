@@ -2,7 +2,7 @@
 
 ## Metadata
 - Issue: #13
-- Status: ready
+- Status: done
 - Priority: P2
 - Type: feature
 - Area: core
@@ -11,14 +11,14 @@
 PDF text adapter bootstrap
 
 ## Goal
-Describe what should exist when this task is done.
+Add initial text-only PDF translation support that can extract readable text from text PDFs and rebuild translated output in a simple text-first PDF form.
 
 ## Context
 Imported from issue #13.
 
 ## Scope
-- item
-- item
+- extract text lines from text-based PDF pages
+- rebuild translated output as a simple readable PDF
 
 ## Constraints
 - Follow AGENTS.md and .codex/config.toml
@@ -26,9 +26,9 @@ Imported from issue #13.
 - Add or update tests
 
 ## Deliverables
-- implementation
-- tests
-- docs update if needed
+- PDF adapter implementation
+- unit tests for extraction, rebuild, pipeline, and CLI handling
+- task metadata update
 
 ## Validation
 - pytest -q
@@ -36,8 +36,8 @@ Imported from issue #13.
 - mypy packages
 
 ## Out of scope
-- item
-- item
+- OCR or scanned PDFs
+- pixel-perfect visual reconstruction
 
 ## Imported issue body
 ## Goal
@@ -67,8 +67,8 @@ PDF is a common enterprise format, but should start with text PDFs only for a re
 docs/tasks/012-pdf-text-adapter-bootstrap.md
 
 ## Completion checklist
-- [ ] code added
-- [ ] tests added
-- [ ] validation passed
-- [ ] docs updated
-- [ ] issue closure comment posted
+- [x] code added
+- [x] tests added
+- [x] validation passed
+- [x] docs updated
+- [x] issue closure comment posted

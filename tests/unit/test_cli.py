@@ -1,10 +1,12 @@
 from pathlib import Path
 
 from docx import Document
+from pypdf import PdfReader
 from typer.testing import CliRunner
 
 from apps.cli.main import app
 from packages.core.models import Segment, TranslationResult, TranslationRequest
+from tests.unit.test_pdf_adapter import FIXTURES_DIR
 
 runner = CliRunner()
 
@@ -188,6 +190,34 @@ def test_translate_writes_output_file_for_docx(tmp_path: Path) -> None:
     assert translated_doc.paragraphs[0].runs[1].text == "world [fr]"
     assert translated_doc.paragraphs[0].runs[1].bold is True
     assert translated_doc.sections[0].header.paragraphs[0].text == "Header text [fr]"
+
+
+def test_translate_writes_output_file_for_pdf(tmp_path: Path) -> None:
+    input_path = tmp_path / "sample.pdf"
+    output_path = tmp_path / "out.pdf"
+    input_path.write_bytes((FIXTURES_DIR / "sample.pdf").read_bytes())
+
+    result = runner.invoke(
+        app,
+        [
+            "translate",
+            "--input",
+            str(input_path),
+            "--output",
+            str(output_path),
+            "--source",
+            "en",
+            "--target",
+            "fr",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert output_path.exists()
+    reader = PdfReader(str(output_path))
+    rebuilt_text = "\n".join(page.extract_text() or "" for page in reader.pages)
+    assert "Quarterly report [fr]" in rebuilt_text
+    assert "Revenue up 12% [fr]" in rebuilt_text
 
 
 def test_translate_uses_ct2_mode_when_model_path_is_provided(

@@ -14,9 +14,11 @@ app = typer.Typer(help="Offline document translation CLI.")
 _SUFFIX_TO_FORMAT: dict[str, DocumentFormat] = {
     ".docx": DocumentFormat.DOCX,
     ".md": DocumentFormat.MD,
+    ".pdf": DocumentFormat.PDF,
     ".txt": DocumentFormat.TXT,
+    ".pptx": DocumentFormat.PPTX,
+    ".xlsx": DocumentFormat.XLSX,
 }
-
 @app.callback()
 def cli() -> None:
     """VaultTranslate command group."""

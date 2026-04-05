@@ -16,9 +16,13 @@ def test_select_adapter_supports_txt_md_docx_pptx_xlsx() -> None:
     assert select_adapter(DocumentFormat.XLSX).supported_format is DocumentFormat.XLSX
 
 
+def test_select_adapter_supports_pdf() -> None:
+    assert select_adapter(DocumentFormat.PDF).supported_format is DocumentFormat.PDF
+
+
 def test_select_adapter_rejects_unsupported_format() -> None:
     with pytest.raises(ValueError, match="No adapter configured"):
-        select_adapter(DocumentFormat.PDF)
+        select_adapter(object())  # type: ignore[arg-type]
 
 
 def test_run_pipeline_translates_txt_document_bytes() -> None:
