@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from packages.adapter_docx import DocxDocumentAdapter
 from packages.adapter_pptx import PptxDocumentAdapter
 from packages.adapter_text import MarkdownDocumentAdapter, TxtDocumentAdapter
+from packages.adapter_xlsx import XlsxDocumentAdapter
 
 from .interfaces import DocumentAdapter, TranslatorEngine
 from .models import DocumentFormat, Segment, TranslationRequest, TranslationResult
@@ -26,6 +27,8 @@ def select_adapter(document_format: DocumentFormat) -> DocumentAdapter:
         return DocxDocumentAdapter()
     if document_format is DocumentFormat.PPTX:
         return PptxDocumentAdapter()
+    if document_format is DocumentFormat.XLSX:
+        return XlsxDocumentAdapter()
     raise ValueError(f"No adapter configured for document format '{document_format.value}'")
 
 

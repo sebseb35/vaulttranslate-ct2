@@ -13,6 +13,7 @@ dependencies = [
     "pydantic",
     "python-docx",
     "python-pptx",
+    "openpyxl",
 ]
 
 [project.optional-dependencies]
@@ -41,3 +42,10 @@ line-length = 100
 [tool.mypy]
 python_version = "3.12"
 strict = true
+
+[[tool.mypy.overrides]]
+module = [
+    "openpyxl",
+    "openpyxl.*",
+]
+ignore_missing_imports = true

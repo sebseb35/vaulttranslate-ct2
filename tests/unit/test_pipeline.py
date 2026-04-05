@@ -8,11 +8,12 @@ from packages.core import (
 )
 
 
-def test_select_adapter_supports_txt_md_docx_pptx() -> None:
+def test_select_adapter_supports_txt_md_docx_pptx_xlsx() -> None:
     assert select_adapter(DocumentFormat.TXT).supported_format is DocumentFormat.TXT
     assert select_adapter(DocumentFormat.MD).supported_format is DocumentFormat.MD
     assert select_adapter(DocumentFormat.DOCX).supported_format is DocumentFormat.DOCX
     assert select_adapter(DocumentFormat.PPTX).supported_format is DocumentFormat.PPTX
+    assert select_adapter(DocumentFormat.XLSX).supported_format is DocumentFormat.XLSX
 
 
 def test_select_adapter_rejects_unsupported_format() -> None:

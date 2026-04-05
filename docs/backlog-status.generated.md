@@ -1,6 +1,6 @@
 # Generated Backlog Status
 
-Generated: 2026-04-05T18:11:07Z
+Generated: 2026-04-05T18:35:04Z
 
 GitHub Issues are the source of truth.
 
@@ -11,12 +11,12 @@ GitHub Issues are the source of truth.
 | #15 | CI matrix and optional real CT2 validation gate | P1, feature, packaging, quality, ready | docs/tasks/015-014-ci-matrix-real-ct2-gate.md | open |
 | #14 | DOCX fidelity hardening | P1, tech-debt, adapter, quality, ready | docs/tasks/014-013-docx-fidelity-hardening.md | open |
 | #13 | PDF text adapter bootstrap | P1, feature, adapter, ready | docs/tasks/013-012-pdf-text-adapter-bootstrap.md | open |
-| #12 | XLSX adapter bootstrap | P0, feature, adapter, ready | docs/tasks/012-011-xlsx-adapter-bootstrap.md | open |
 
 ## Closed Issues
 
 | Number | Title | Labels | Task File | State |
 |---|---|---|---|---|
+| #12 | XLSX adapter bootstrap | P0, feature, adapter, ready | docs/tasks/012-011-xlsx-adapter-bootstrap.md | closed |
 | #11 | PPTX adapter bootstrap | P0, feature, adapter, done | docs/tasks/011-010-pptx-adapter-bootstrap.md | closed |
 | #10 | Integrate Marian tokenizer into CT2 engine | enhancement | — | closed |
 | #9 | Real CTranslate2 smoke test | enhancement | — | closed |
@@ -33,7 +33,6 @@ GitHub Issues are the source of truth.
 
 | Priority | Number | Title | Labels | Task File |
 |---|---|---|---|---|
-| P0 | #12 | XLSX adapter bootstrap | P0, feature, adapter, ready | docs/tasks/012-011-xlsx-adapter-bootstrap.md |
 | P1 | #13 | PDF text adapter bootstrap | P1, feature, adapter, ready | docs/tasks/013-012-pdf-text-adapter-bootstrap.md |
 | P1 | #14 | DOCX fidelity hardening | P1, tech-debt, adapter, quality, ready | docs/tasks/014-013-docx-fidelity-hardening.md |
 | P1 | #15 | CI matrix and optional real CT2 validation gate | P1, feature, packaging, quality, ready | docs/tasks/015-014-ci-matrix-real-ct2-gate.md |
