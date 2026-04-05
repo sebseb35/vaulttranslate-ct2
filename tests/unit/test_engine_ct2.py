@@ -44,11 +44,24 @@ class _FakeAutoTokenizer:
             203: "how",
             204: "are",
             205: "you",
+            206: "this",
+            207: "is",
+            208: "a",
+            209: "plain",
+            210: "text",
+            211: "file",
+            212: ".",
             301: "bonjour",
             302: "monde",
             303: "comment",
             304: "ca",
             305: "va",
+            306: "c",
+            307: "'",
+            308: "est",
+            309: "un",
+            310: "fichier",
+            311: "texte",
         }
         self._token_to_id = {token: token_id for token_id, token in self._id_to_token.items()}
         self.encode_calls: list[str] = []
@@ -329,3 +342,42 @@ def test_engine_rejects_result_count_mismatch(monkeypatch: pytest.MonkeyPatch) -
     with pytest.raises(CTranslate2EngineError, match="different number of results"):
         engine.translate(request)
 
+
+def test_engine_preserves_multiline_content_with_chunked_translation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _patch_transformers(monkeypatch)
+
+    class _FakeTranslator:
+        def __init__(
+            self,
+            model_path: str,
+            device: str,
+            inter_threads: int,
+            intra_threads: int,
+            compute_type: str,
+        ) -> None:
+            del model_path, device, inter_threads, intra_threads, compute_type
+
+        def translate_batch(self, source: list[list[str]]) -> list[_FakeTranslationResult]:
+            assert source == [
+                ["<s>", "hello", "world", "</s>"],
+                ["<s>", "this", "is", "a", "plain", "text", "file", "</s>"],
+            ]
+            return [
+                _FakeTranslationResult(["<s>", "bonjour", "monde", "</s>"]),
+                _FakeTranslationResult(
+                    ["<s>", "c", "'", "est", "un", "fichier", "texte", "</s>"]
+                ),
+            ]
+
+    fake_ct2_module = SimpleNamespace(Translator=_FakeTranslator)
+    monkeypatch.setattr("packages.engine_ct2.engine._load_ctranslate2", lambda: fake_ct2_module)
+
+    engine = CTranslate2TranslatorEngine(model_path="/models/ct2-en-fr")
+    request = _request(
+        segments=(Segment(segment_id="s1", text="hello world\nthis is a plain text file"),)
+    )
+
+    result = engine.translate(request)
+    assert result.translated_segments[0].text == "bonjour monde\nc ' est un fichier texte"

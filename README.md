@@ -37,6 +37,8 @@ vaulttranslate translate \
   --intra-threads 4
 ```
 
+For multiline TXT content, the CT2 path preserves newline structure and translates line chunks to avoid dropped content.
+
 ## Real CT2 Smoke Test (Optional)
 No model is downloaded automatically. Place a compatible CTranslate2 model folder locally, then run:
 

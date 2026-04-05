@@ -3,11 +3,13 @@ from __future__ import annotations
 import logging
 from collections.abc import Callable
 from importlib import import_module
+import re
 from typing import Any
 
 from packages.core import Segment, TranslationRequest, TranslationResult, TranslatorEngine
 
 logger = logging.getLogger(__name__)
+_NEWLINE_SPLIT_PATTERN = re.compile(r"(\n+)")
 
 
 class CTranslate2EngineError(RuntimeError):
@@ -75,31 +77,49 @@ class CTranslate2TranslatorEngine(TranslatorEngine):
             raise CTranslate2EngineError(f"Failed to initialize CTranslate2 translator: {exc}") from exc
 
     def translate(self, request: TranslationRequest) -> TranslationResult:
-        batch_tokens = [self._token_encoder(self._tokenizer, segment.text) for segment in request.segments]
+        prepared_segments: list[list[str]] = []
+        chunk_index_to_segment: list[tuple[int, int]] = []
+        batch_tokens: list[list[str]] = []
+
+        for segment_idx, segment in enumerate(request.segments):
+            chunks = _split_preserving_newlines(segment.text)
+            prepared_segments.append(chunks)
+            for chunk_idx, chunk in enumerate(chunks):
+                if not _is_translatable_chunk(chunk):
+                    continue
+                chunk_index_to_segment.append((segment_idx, chunk_idx))
+                batch_tokens.append(self._token_encoder(self._tokenizer, chunk))
 
         logger.debug("Translating %d segments with CTranslate2", len(batch_tokens))
 
-        try:
-            raw_results = self._translator.translate_batch(batch_tokens)
-        except Exception as exc:
-            logger.error("CTranslate2 batch translation failed: %s", exc)
-            raise CTranslate2EngineError(f"CTranslate2 batch translation failed: {exc}") from exc
+        raw_results: list[Any] = []
+        if batch_tokens:
+            try:
+                raw_results = self._translator.translate_batch(batch_tokens)
+            except Exception as exc:
+                logger.error("CTranslate2 batch translation failed: %s", exc)
+                raise CTranslate2EngineError(f"CTranslate2 batch translation failed: {exc}") from exc
 
-        if len(raw_results) != len(request.segments):
+        if len(raw_results) != len(chunk_index_to_segment):
             raise CTranslate2EngineError(
                 "CTranslate2 returned a different number of results than requested segments"
             )
 
-        translated_segments: list[Segment] = []
-        for source_segment, result in zip(request.segments, raw_results, strict=True):
+        translated_chunk_texts: dict[tuple[int, int], str] = {}
+        for mapping, result in zip(chunk_index_to_segment, raw_results, strict=True):
             hypotheses = getattr(result, "hypotheses", None)
             if not hypotheses or not hypotheses[0]:
-                raise CTranslate2EngineError(
-                    f"Empty translation hypothesis for segment '{source_segment.segment_id}'"
-                )
-
+                raise CTranslate2EngineError("Empty translation hypothesis in chunked translation")
             best_tokens = hypotheses[0]
-            translated_text = self._token_decoder(self._tokenizer, best_tokens)
+            translated_chunk_texts[mapping] = self._token_decoder(self._tokenizer, best_tokens)
+
+        translated_segments: list[Segment] = []
+        for segment_idx, source_segment in enumerate(request.segments):
+            chunks = prepared_segments[segment_idx]
+            rebuilt_parts: list[str] = []
+            for chunk_idx, chunk in enumerate(chunks):
+                rebuilt_parts.append(translated_chunk_texts.get((segment_idx, chunk_idx), chunk))
+            translated_text = "".join(rebuilt_parts)
             translated_segments.append(
                 Segment(
                     segment_id=source_segment.segment_id,
@@ -131,3 +151,13 @@ class CTranslate2TranslatorEngine(TranslatorEngine):
     def _decode_with_tokenizer(tokenizer: Any, tokens: list[str]) -> str:
         token_ids = tokenizer.convert_tokens_to_ids(tokens)
         return str(tokenizer.decode(token_ids, skip_special_tokens=True))
+
+
+def _split_preserving_newlines(text: str) -> list[str]:
+    if text == "":
+        return [""]
+    return _NEWLINE_SPLIT_PATTERN.split(text)
+
+
+def _is_translatable_chunk(chunk: str) -> bool:
+    return chunk != "" and "\n" not in chunk and not chunk.isspace()
