@@ -186,7 +186,7 @@ def test_translate_writes_output_file_for_docx(tmp_path: Path) -> None:
     assert output_path.exists()
 
     translated_doc = Document(output_path)
-    assert translated_doc.paragraphs[0].runs[0].text == "Hello [fr] "
+    assert translated_doc.paragraphs[0].runs[0].text == "Hello "
     assert translated_doc.paragraphs[0].runs[1].text == "world [fr]"
     assert translated_doc.paragraphs[0].runs[1].bold is True
     assert translated_doc.sections[0].header.paragraphs[0].text == "Header text [fr]"

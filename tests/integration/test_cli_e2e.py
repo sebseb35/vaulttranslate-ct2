@@ -92,7 +92,7 @@ def test_cli_e2e_docx_writes_output(tmp_path: Path) -> None:
     assert output_path.exists()
 
     translated_doc = Document(output_path)
-    assert translated_doc.paragraphs[0].runs[0].text == "Hello [fr] "
+    assert translated_doc.paragraphs[0].runs[0].text == "Hello "
     assert translated_doc.paragraphs[0].runs[1].text == "world [fr]"
     assert translated_doc.paragraphs[1].text == "Second paragraph [fr]"
     assert translated_doc.tables[0].cell(0, 0).text == "Cell A1 [fr]"

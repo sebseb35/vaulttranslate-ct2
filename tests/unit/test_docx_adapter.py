@@ -24,8 +24,7 @@ def test_docx_adapter_extracts_paragraphs_runs_tables_header_footer() -> None:
     assert adapter.supported_format is DocumentFormat.DOCX
     assert all(segment.segment_id.startswith("docx-") for segment in segments)
     assert "Header text" in texts
-    assert "Hello " in texts
-    assert "world" in texts
+    assert "Hello world" in texts
     assert "Second paragraph" in texts
     assert "Cell A1" in texts
     assert "Cell B2" in texts
@@ -39,13 +38,10 @@ def test_docx_adapter_extracts_hyperlinks_and_mixed_inline_content() -> None:
     segments = adapter.extract_segments(source)
     texts = [segment.text for segment in segments]
 
-    assert "Prefix " in texts
-    assert "OpenAI Docs" in texts
-    assert " suffix" in texts
+    assert "Prefix OpenAI Docs suffix" in texts
     assert "Line 1\nLine 2\tTabbed" in texts
     assert "Only Link" in texts
-    assert "Cell prefix " in texts
-    assert "Cell Link" in texts
+    assert "Cell prefix Cell Link" in texts
     assert "Header baseline" in texts
 
 
@@ -64,7 +60,7 @@ def test_docx_adapter_rebuild_roundtrip_preserves_structure_and_updates_text(tmp
     output_path.write_bytes(rebuilt_bytes)
     doc = Document(output_path)
 
-    assert doc.paragraphs[0].runs[0].text == "Hello  FR"
+    assert doc.paragraphs[0].runs[0].text == "Hello "
     assert doc.paragraphs[0].runs[1].text == "world FR"
     assert doc.paragraphs[0].runs[1].bold is True
     assert doc.paragraphs[1].text == "Second paragraph FR"
@@ -74,13 +70,46 @@ def test_docx_adapter_rebuild_roundtrip_preserves_structure_and_updates_text(tmp
     assert doc.sections[0].footer.paragraphs[0].text == "Footer text FR"
 
 
+def test_docx_adapter_rebuild_distributes_semantic_translation_across_runs(tmp_path: Path) -> None:
+    adapter = DocxDocumentAdapter()
+    source = _fixture_bytes("sample.docx")
+    extracted = adapter.extract_segments(source)
+
+    translated = tuple(
+        Segment(
+            segment_id=segment.segment_id,
+            text="Bonjour monde entier" if segment.text == "Hello world" else f"{segment.text} FR",
+        )
+        for segment in extracted
+    )
+    rebuilt_bytes = adapter.rebuild_document(source, translated)
+
+    output_path = tmp_path / "rebuilt-semantic.docx"
+    output_path.write_bytes(rebuilt_bytes)
+    doc = Document(output_path)
+
+    assert doc.paragraphs[0].text == "Bonjour monde entier"
+    assert doc.paragraphs[0].runs[0].text == "Bonjour "
+    assert doc.paragraphs[0].runs[1].text == "monde entier"
+    assert doc.paragraphs[0].runs[1].bold is True
+
+
 def test_docx_adapter_rebuild_preserves_hyperlinks_and_inline_formatting(tmp_path: Path) -> None:
     adapter = DocxDocumentAdapter()
     source = _fixture_bytes("fidelity_hardening.docx")
     extracted = adapter.extract_segments(source)
 
     translated = tuple(
-        Segment(segment_id=segment.segment_id, text=f"{segment.text} FR")
+        Segment(
+            segment_id=segment.segment_id,
+            text=(
+                "Prefixe OpenAI Docs suffixe"
+                if segment.text == "Prefix OpenAI Docs suffix"
+                else "Cell prefixe Cell Link"
+                if segment.text == "Cell prefix Cell Link"
+                else f"{segment.text} FR"
+            ),
+        )
         for segment in extracted
     )
     rebuilt_bytes = adapter.rebuild_document(source, translated)
@@ -91,10 +120,8 @@ def test_docx_adapter_rebuild_preserves_hyperlinks_and_inline_formatting(tmp_pat
 
     first_para = doc.paragraphs[0]
     mixed_content = list(first_para.iter_inner_content())
-    assert mixed_content[0].text == "Prefix  FR"
-    assert mixed_content[1].text == "OpenAI Docs FR"
+    assert first_para.text == "Prefixe OpenAI Docs suffixe"
     assert mixed_content[1].url == "https://example.com/docs"
-    assert mixed_content[2].text == " suffix FR"
 
     second_para = doc.paragraphs[1]
     assert second_para.runs[0].text == "Line 1\nLine 2\tTabbed FR"
@@ -106,8 +133,7 @@ def test_docx_adapter_rebuild_preserves_hyperlinks_and_inline_formatting(tmp_pat
     assert only_link_content[1].url == "https://example.com/only"
 
     cell_content = list(doc.tables[0].cell(0, 0).paragraphs[0].iter_inner_content())
-    assert cell_content[0].text == "Cell prefix  FR"
-    assert cell_content[1].text == "Cell Link FR"
+    assert doc.tables[0].cell(0, 0).text == "Cell prefixe Cell Link"
     assert cell_content[1].url == "https://example.com/cell"
     assert doc.sections[0].header.paragraphs[0].text == "Header baseline FR"
 

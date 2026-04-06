@@ -71,4 +71,4 @@ docs/tasks/013-docx-fidelity-hardening.md
 - [x] tests added
 - [x] validation passed
 - [x] docs updated
-- [ ] issue closure comment posted
+- [x] issue closure comment posted
