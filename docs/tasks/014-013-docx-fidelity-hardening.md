@@ -2,7 +2,7 @@
 
 ## Metadata
 - Issue: #14
-- Status: ready
+- Status: done
 - Priority: P2
 - Type: feature
 - Area: core
@@ -11,14 +11,14 @@
 DOCX fidelity hardening
 
 ## Goal
-Describe what should exist when this task is done.
+Improve DOCX rebuild fidelity for richer inline content and additional real-world paragraph structures without sacrificing rebuild safety.
 
 ## Context
 Imported from issue #14.
 
 ## Scope
-- item
-- item
+- harden extraction and rebuild for mixed inline paragraph content such as hyperlinks
+- validate behavior on a more realistic DOCX fixture
 
 ## Constraints
 - Follow AGENTS.md and .codex/config.toml
@@ -26,9 +26,9 @@ Imported from issue #14.
 - Add or update tests
 
 ## Deliverables
-- implementation
-- tests
-- docs update if needed
+- DOCX adapter hardening for mixed inline content
+- additional DOCX fidelity tests and fixture coverage
+- task metadata update
 
 ## Validation
 - pytest -q
@@ -36,8 +36,8 @@ Imported from issue #14.
 - mypy packages
 
 ## Out of scope
-- item
-- item
+- tracked changes support
+- comments, SmartArt, or text boxes beyond trivial existing behavior
 
 ## Imported issue body
 ## Goal
@@ -67,8 +67,8 @@ DOCX support exists, but product quality depends on handling additional real-wor
 docs/tasks/013-docx-fidelity-hardening.md
 
 ## Completion checklist
-- [ ] code added
-- [ ] tests added
-- [ ] validation passed
-- [ ] docs updated
+- [x] code added
+- [x] tests added
+- [x] validation passed
+- [x] docs updated
 - [ ] issue closure comment posted

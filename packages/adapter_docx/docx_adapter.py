@@ -11,9 +11,12 @@ from docx.oxml.table import CT_Tbl
 from docx.oxml.text.paragraph import CT_P
 from docx.section import _Footer, _Header
 from docx.table import _Cell, Table
+from docx.text.hyperlink import Hyperlink
 from docx.text.paragraph import Paragraph
+from docx.text.run import Run
 
-from packages.core import DocumentAdapter, DocumentFormat, Segment
+from packages.core.interfaces import DocumentAdapter
+from packages.core.models import DocumentFormat, Segment
 
 
 @dataclass(frozen=True, slots=True)
@@ -87,10 +90,9 @@ def _collect_text_targets(doc: DocxDocument) -> list[_TextTarget]:
 
 def _collect_block_text_targets(block: Paragraph | Table, targets: list[_TextTarget]) -> None:
     if isinstance(block, Paragraph):
-        runs = [run for run in block.runs if run.text != ""]
-        if runs:
-            for run in runs:
-                targets.append(_TextTarget(kind="run", node=run))
+        run_targets = _paragraph_run_targets(block)
+        if run_targets:
+            targets.extend(run_targets)
             return
 
         if block.text != "":
@@ -105,6 +107,26 @@ def _collect_block_text_targets(block: Paragraph | Table, targets: list[_TextTar
         return
 
     raise TypeError(f"Unsupported block type: {type(block)!r}")
+
+
+def _paragraph_run_targets(paragraph: Paragraph) -> list[_TextTarget]:
+    targets: list[_TextTarget] = []
+
+    for item in paragraph.iter_inner_content():
+        if isinstance(item, Run):
+            if item.text != "":
+                targets.append(_TextTarget(kind="run", node=item))
+            continue
+
+        if isinstance(item, Hyperlink):
+            for run in item.runs:
+                if run.text != "":
+                    targets.append(_TextTarget(kind="run", node=run))
+            continue
+
+        raise TypeError(f"Unsupported paragraph content type: {type(item)!r}")
+
+    return targets
 
 
 def _iter_block_items(parent: Any) -> Iterator[Paragraph | Table]:
