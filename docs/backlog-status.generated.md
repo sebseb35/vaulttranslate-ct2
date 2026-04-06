@@ -1,6 +1,6 @@
 # Generated Backlog Status
 
-Generated: 2026-04-06T15:30:26Z
+Generated: 2026-04-06T15:34:44Z
 
 GitHub Issues are the source of truth.
 
@@ -8,13 +8,13 @@ GitHub Issues are the source of truth.
 
 | Number | Title | Labels | Task File | State |
 |---|---|---|---|---|
-| #18 | DOCX semantic run grouping for safer translation | P1, feature, adapter, quality, ready | — | open |
 | #15 | CI matrix and optional real CT2 validation gate | P1, feature, packaging, quality, ready | docs/tasks/015-014-ci-matrix-real-ct2-gate.md | open |
 
 ## Closed Issues
 
 | Number | Title | Labels | Task File | State |
 |---|---|---|---|---|
+| #18 | DOCX semantic run grouping for safer translation | P1, feature, adapter, quality, ready | docs/tasks/018-017-docx-semantic-run-grouping.md | closed |
 | #16 | Fix Marian CT2 output fidelity | tech-debt, engine, quality, done | docs/tasks/016-015-fix-marian-ct2-output-fidelity.md | closed |
 | #14 | DOCX fidelity hardening | P1, tech-debt, adapter, quality, ready | docs/tasks/014-013-docx-fidelity-hardening.md | closed |
 | #13 | PDF text adapter bootstrap | P1, feature, adapter, ready | docs/tasks/013-012-pdf-text-adapter-bootstrap.md | closed |
@@ -36,4 +36,3 @@ GitHub Issues are the source of truth.
 | Priority | Number | Title | Labels | Task File |
 |---|---|---|---|---|
 | P1 | #15 | CI matrix and optional real CT2 validation gate | P1, feature, packaging, quality, ready | docs/tasks/015-014-ci-matrix-real-ct2-gate.md |
-| P1 | #18 | DOCX semantic run grouping for safer translation | P1, feature, adapter, quality, ready | docs/tasks/018-017-docx-semantic-run-grouping.md |

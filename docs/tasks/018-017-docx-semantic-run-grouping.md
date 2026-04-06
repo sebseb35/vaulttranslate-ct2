@@ -75,4 +75,4 @@ Harden DOCX translation semantics by grouping compatible adjacent inline content
 - [x] tests added
 - [x] validation passed
 - [x] docs updated
-- [ ] issue closure comment posted
+- [x] issue closure comment posted
